@@ -1,0 +1,18 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bullseye64"
+
+  config.vm.box_check_update = false
+
+  config.vm.network "private_network", ip: "192.168.56.12"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "ansible-demo"
+    vb.cpus = "1"
+    vb.memory = "1024"
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--groups", "/ansible"]
+  end
+  
+end

@@ -1,0 +1,37 @@
+---
+- name: Demo Playbook
+  hosts: demo
+  become: true
+  tasks:
+    - name: Mise à jour de la liste des paquets
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Installation de htop
+      ansible.builtin.apt:
+        name: htop
+        state: present
+
+    - name: Installation de nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Démarrage de nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Copie du fichier index.html
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Redémarrage de nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
