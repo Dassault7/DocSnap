@@ -46,13 +46,37 @@ callbacks_enabled = profile_tasks
 stdout_callback = yaml
 bin_ansible_callbacks = true
 host_key_checking = false
+collections_paths = ./collections
 roles_path = ./roles
 ...
 ```
 
 ### Dossier d'inventaire
 
-L'inventaire est un fichier qui contient la liste des machines sur lesquelles Ansible va agir. Il peut être au format INI ou YAML. Il est possible de définir des groupes, des variables, des alias, etc.
+#### Fichier d'inventaire
+
+L'inventaire est un fichier qui contient la liste des machines sur lesquelles Ansible va agir. Il peut être au format __INI__ ou __YAML__. Il est possible de définir des groupes, des variables, des alias, etc.
+
+##### INI
+
+Exemple de fichier d'inventaire `inventories/hosts` :
+
+```ini
+[web]
+web1
+web2
+
+[db]
+db1
+
+[dev]
+dev1 ansible_host=... ansible_port=... ansible_user=... ansible_ssh_private_key_file=...
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+```
+
+##### YAML
 
 Exemple de fichier d'inventaire `inventories/00_inventory.yml` :
 
@@ -76,4 +100,24 @@ all:
   
   vars:
     ansible_python_interpreter: /usr/bin/python3
+```
+
+#### Dossier `group_vars`
+
+Le dossier `group_vars` permet de définir des variables spécifiques à un groupe d'hôtes. Les fichiers doivent être nommés selon le nom du groupe.
+
+Exemple de fichier `group_vars/web.yml` :
+
+```yaml
+nginx_version: 1.18.0
+```
+
+#### Dossier `host_vars`
+
+Le dossier `host_vars` permet de définir des variables spécifiques à un hôte. Les fichiers doivent être nommés selon le nom de l'hôte.
+
+Exemple de fichier `host_vars/web1.yml` :
+
+```yaml
+nginx_port: 80
 ```
