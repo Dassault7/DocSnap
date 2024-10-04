@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+vagrant_root = File.dirname(File.expand_path(__FILE__))
+settings = YAML.load_file "#{vagrant_root}/settings.yml"
+
+Vagrant.configure("2") do |config|
+
+  # Set the box
+  if `uname -m`.strip == "aarch64"
+    config.vm.box = settings["software"]["box"] + "-arm64"
+  else
+    config.vm.box = settings["software"]["box"]
+  end
+  config.vm.box_check_update = true
+
+  config.vm.define "controlplane" do |controlplane|
+    controlplane.vm.hostname = "control-plane"
+    controlplane.vm.network "public_network", ip: settings["network"]["ip"]
+
+    controlplane.vm.provider "virtualbox" do |vb|
+      vb.cpus = settings["node"]["cpus"]
+      vb.memory = settings["node"]["memory"]
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--groups", "/k3s"]
+    end
+
+    controlplane.vm.provision "shell", path: "scripts/bootstrap.sh", env: {
+      "DNS_SERVERS" => settings["network"]["dns_servers"].join(" "),
+    }
+
+    controlplane.vm.provision "shell", path: "scripts/install.sh", env: {
+      "CALICO_VERSION" => settings["software"]["calico"],
+      "CONTROL_IP" => settings["network"]["ip"],
+      "POD_CIDR" => settings["network"]["pod_cidr"],
+      "SERVICE_CIDR" => settings["network"]["service_cidr"],
+    }
+  end
+end

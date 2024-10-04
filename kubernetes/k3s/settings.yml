@@ -1,0 +1,15 @@
+network:
+  ip: 192.168.1.100
+  dns_servers:
+    - 192.168.1.1
+    - 8.8.8.8
+  pod_cidr: 172.16.1.0/16
+  service_cidr: 172.17.1.0/18
+
+node:
+  cpus: 4
+  memory: 4096
+
+software:
+  box: bento/ubuntu-22.04
+  calico: 3.28.1
